@@ -24,7 +24,7 @@ Il blog è realizzato con:
 - Layout personalizzato ispirato alla palette Energy Web  
 
 ## 🔗 Link al sito
-👉 https://tuonome.github.io/tuoblog
+👉 [BLOG](https://bisiako.github.io/energyweb-news/)
 
 ## 📌 Parole chiave SEO
 energy web, blockchain energia, smart grid, decentralizzazione energetica, sostenibilità digitale, progetti energy web, digital energy, token energy markets
