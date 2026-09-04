@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Il mio blog</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  /*
+    FONT "AMULYA":
+    Non è disponibile su CDN pubblici (Google Fonts, cdnjs).
+    Scaricalo da: https://github.com/energywebfoundation/media-kit
+    (file Amulya_Complete.zip), metti i file .woff2 in una cartella
+    "fonts/" nel repo e scommenta il blocco @font-face qui sotto.
+  */
+  /*
+  @font-face {
+    font-family: 'Amulya';
+    src: url('fonts/Amulya-Variable.woff2') format('woff2');
+    font-weight: 300 700;
+  }
+  */
+
+  :root {
+    --purple: #A466FF;
+    --blue: #3492FC;
+    --cyan: #15E8FF;
+    --bg: #0B0B14;
+    --bg-card: #14141F;
+    --border: #262636;
+    --text: #F2F2F7;
+    --text-muted: #9494A8;
+    --gradient: linear-gradient(90deg, var(--purple), var(--cyan));
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Amulya', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 60px 24px;
+    line-height: 1.7;
+  }
+
+  header {
+    margin-bottom: 40px;
+  }
+
+  header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
+
+  header p {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin: 0;
+  }
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 40px;
+  }
+
+  nav a {
+    text-decoration: none;
+    color: var(--text);
+    padding: 16px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+
+  nav a:hover {
+    border-color: var(--purple);
+    transform: translateX(2px);
+  }
+
+  nav a .title {
+    font-weight: 500;
+    font-size: 16px;
+  }
+
+  nav a .date {
+    color: var(--text-muted);
+    font-size: 13px;
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+
+  #content {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+  }
+
+  #content h1, #content h2, #content h3 {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
+
+  #content a {
+    color: var(--cyan);
+  }
+
+  #content code {
+    background: #1E1E2E;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--cyan);
+  }
+
+  #content pre {
+    background: #1E1E2E;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+
+  #content pre code {
+    background: none;
+    padding: 0;
+  }
+
+  #content blockquote {
+    border-left: 3px solid var(--purple);
+    margin: 0;
+    padding: 4px 20px;
+    color: var(--text-muted);
+  }
+
+  #content img {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+
+  #back {
+    margin-top: 28px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.15s;
+  }
+
+  #back:hover {
+    border-color: var(--purple);
+  }
+
+  .empty-state {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Il mio blog</h1>
+  <p>Pensieri, note e articoli</p>
+</header>
+
+<nav id="nav"></nav>
+<div id="content"></div>
+
+<script>
+/*
+  ISTRUZIONI D'USO
+  1. Crea una cartella "posts/" nel repo.
+  2. Dentro, aggiungi "index.json" con l'elenco dei post (vedi POSTS_URL sotto).
+  3. Aggiungi un file .md per ogni post, con lo stesso "slug" indicato in index.json.
+  4. Pubblica tutto su GitHub Pages. Fine: nessuna build, nessun tool esterno.
+*/
+
+const POSTS_URL = "posts/index.json"; // elenco dei post: [{ "slug": "...", "title": "...", "date": "..." }]
+
+const nav = document.getElementById("nav");
+const content = document.getElementById("content");
+
+async function loadIndex() {
+  try {
+    const res = await fetch(POSTS_URL);
+    const posts = await res.json();
+    nav.innerHTML = posts.map(p =>
+      `<a href="#/post/${p.slug}" data-slug="${p.slug}">
+        <span class="title">${p.title}</span>
+        <span class="date">${p.date}</span>
+      </a>`
+    ).join("");
+    showIntroOrRoute();
+  } catch (e) {
+    nav.innerHTML = "<p class='empty-state'>Impossibile caricare posts/index.json</p>";
+  }
+}
+
+async function loadPost(slug) {
+  content.innerHTML = "<p class='empty-state'>Caricamento...</p>";
+  try {
+    const res = await fetch(`posts/${slug}.md`);
+    if (!res.ok) throw new Error("Post non trovato");
+    const md = await res.text();
+    content.innerHTML = marked.parse(md) +
+      `<button id="back">&larr; Torna all'elenco</button>`;
+    document.getElementById("back").addEventListener("click", () => {
+      history.pushState({}, "", location.pathname);
+      content.innerHTML = "<p class='empty-state'>Seleziona un articolo dal menu.</p>";
+    });
+  } catch (e) {
+    content.innerHTML = "<p class='empty-state'>Errore nel caricamento dell'articolo.</p>";
+  }
+}
+
+function showIntroOrRoute() {
+  const match = location.hash.match(/^#\/post\/(.+)$/);
+  if (match) {
+    loadPost(match[1]);
+  } else {
+    content.innerHTML = "<p class='empty-state'>Seleziona un articolo dal menu.</p>";
+  }
+}
+
+nav.addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-slug]");
+  if (!a) return;
+  e.preventDefault();
+  location.hash = `#/post/${a.dataset.slug}`;
+  loadPost(a.dataset.slug);
+});
+
+window.addEventListener("popstate", showIntroOrRoute);
+window.addEventListener("hashchange", showIntroOrRoute);
+
+loadIndex();
+</script>
+
+</body>
+</html>
