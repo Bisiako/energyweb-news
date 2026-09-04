@@ -1,6 +1,4 @@
 [
-  {"slug": "DPP", "title": "Carta identita digitale", "date": "2026-09-01"},
-  {"slug": "dpp", "title": "Iniziare con Git", "date": "2026-08-01"},
-  {"slug": "intro-git", "title": "Iniziare con Git", "date": "2026-08-01"},
-  {"slug": "github-actions", "title": "Automatizzare con Actions", "date": "2026-08-10"}
+  {"slug": "DPP", "title": "Carta identita digitale", "date": "2026-09-04"},
+  {"slug": "nulla", "title": "x", "date": "2099-12-31"},
 ]
